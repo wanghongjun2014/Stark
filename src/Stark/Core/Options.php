@@ -25,7 +25,7 @@ class Options {
             if (isset($this->$property) == false) {
                 throw new \Stark\Daemon\Exception\Options("Set option failed, option:{$key}");
             }
-            
+
             $this->$property = $value;
         }
 

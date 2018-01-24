@@ -75,9 +75,9 @@ class Master extends \Stark\Core\Options {
 
     private function _initializeProc() {
         \Stark\Core\System::runInBackground();
-
         $this->_pid = posix_getpid();
         $this->_createPidFile();
+
         \Stark\Core\System::setProcTitle($this->_pid, "daemon '{$this->_name}'");
 
         $this->_processorCount = \Stark\Core\System::getProcNumber();
@@ -209,6 +209,7 @@ class Master extends \Stark\Core\Options {
         
         if ($forkPid) {
             $this->_workerStatuses[$index]->pid = $forkPid;
+
         } else {
             socket_close($this->_daemonSocket);
             socket_close($this->_adminSocket);
@@ -293,6 +294,7 @@ class Master extends \Stark\Core\Options {
     }
 
     private function _quit() {
+        error_log('终止信号', 3, '/tmp/a.log');
         $this->_log->addInfo("Ending daemon: {$this->_name}");
 
         foreach ($this->_workerClients as $processClient) {
@@ -599,7 +601,7 @@ class Master extends \Stark\Core\Options {
             return false;
         }
 
-        $className = $options['class'];        
+        $className = $options['class'];
         if ($className[0] != '\\') {
             $className = "\\Stark\\Daemon\\{$type}\\{$className}";
         }
@@ -607,7 +609,7 @@ class Master extends \Stark\Core\Options {
         if (class_exists($className) == false) {
             return false;
         }
-        
+
         $property = '_' . lcfirst($type);
         $this->$property = new $className(isset($options['options']) ? $options['options'] : array());
 

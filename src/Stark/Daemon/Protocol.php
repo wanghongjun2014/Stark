@@ -218,39 +218,31 @@ class Protocol {
         if ($handle == false) {
             return false;
         }
-
         $retryCount = 0;
         $length = strlen($buffer);
         $offset = 0;
-
         while ($offset < $length) { 
-            $sent = @socket_write($handle, substr($buffer, $offset), $length - $offset); 
-
+            $sent = @socket_write($handle, substr($buffer, $offset), $length - $offset);
             if ($sent === false) {
                 $errorCode = socket_last_error($handle);
 
-                if ($errorCode === SOCKET_ECONNRESET || $errorCode === SOCKET_EPIPE) {
+                if ($errorCode === SOCKET_ECONNRESET || $errorCode === SOCKET_EPIPE || $errorCode === SOCKET_EBADF || $errorCode === SOCKET_ENOTSOCK) {
                     break;
                 }
-
-                if ($errorCode === SOCKET_EAGAIN || $errorCode === SOCKET_EWOULDBLOCK) {
+                if ($errorCode === SOCKET_EAGAIN || $errorCode === SOCKET_EWOULDBLOCK || $errorCode === SOCKET_EINTR ) {
                     if ($retryCount++ > self::PROTOCOL_RETRY_MAX) {
                         break;
                     }
 
                     continue;
                 }
-
                 break;
             }
-
             $offset += $sent; 
         }
-
         if ($offset < $length) {
             return false;
         }
-
         return $length;
     }
 

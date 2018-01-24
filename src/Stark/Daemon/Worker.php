@@ -57,7 +57,7 @@ class Worker {
         }
 
         $this->consumer->init($this);
-        
+
         $this->_connectMasterSocket();
         
         $this->_workerStartTime = microtime(true);
@@ -126,6 +126,7 @@ class Worker {
     }
     
     private function _checkHealth() {
+        return 'run time limit';
         $runTime = $this->_queueStartTime - $this->_workerStartTime;
         if ($this->maxRunSeconds > 0 && $runTime > $this->maxRunSeconds) {
             return "Run time limit [{$runTime}] reached";
